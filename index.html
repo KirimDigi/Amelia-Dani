@@ -1301,7 +1301,63 @@
         })();
     </script>
 
-    <script type="module" src="beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495"
+    <script>
+// Auto-update Nama Tamu & QR dari URL #to= atau ?to=
+(function(){
+  function updateGuestFromURL(){
+    try {
+      var hash = window.location.hash || window.location.search || '';
+      var m = hash.match(/(?:\?|#|&)to=([^&]+)/);
+      if (!m) {
+        // coba parse ?to= dari search juga
+        var search = window.location.search;
+        if (search) {
+          var p = new URLSearchParams(search);
+          var v = p.get('to');
+          if (v) m = ['?to='+v, v];
+        }
+      }
+      if (!m) return;
+      var guest = decodeURIComponent(m[1].replace(/\+/g,' '));
+      if (!guest) return;
+      // update dataset & slot di cover
+      var satuMomen = document.getElementById('satuMomen');
+      if (satuMomen) satuMomen.dataset.guest = guest;
+      var slot = document.getElementById('guestNameSlot');
+      if (slot) slot.textContent = guest;
+      // update QR modal - Nama
+      var qrModal = document.getElementById('qrModal');
+      if (qrModal) {
+        // update teks Nama di modal (cari div yang berisi "Nama Tamu" sebelumnya)
+        var divs = qrModal.querySelectorAll('div');
+        for (var i=0;i<divs.length;i++){
+          if (divs[i].textContent.trim() === 'Nama Tamu' && divs[i].nextElementSibling) {
+            divs[i].nextElementSibling.textContent = guest;
+          }
+        }
+        // update QR code - ganti SVG dengan img dari QR API
+        var svg = qrModal.querySelector('svg');
+        if (svg && svg.parentElement) {
+          var data = guest + ' | ' + (satuMomen ? satuMomen.dataset.group : 'VIP');
+          var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(data);
+          var img = document.createElement('img');
+          img.src = qrUrl;
+          img.width = 180; img.height = 180;
+          img.alt = 'QR ' + guest;
+          img.style.cssText = 'width:180px;height:180px;display:block;margin:auto;';
+          svg.parentElement.replaceChild(img, svg);
+        }
+      }
+    } catch(e){ console.log('guest update error',e); }
+  }
+  document.addEventListener('DOMContentLoaded', updateGuestFromURL);
+  window.addEventListener('hashchange', updateGuestFromURL);
+  // juga cek setelah 1 detik (untuk memastikan DOM ready)
+  setTimeout(updateGuestFromURL, 800);
+})();
+</script>
+
+<script type="module" src="beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495"
         integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg=="
         data-cf-beacon='{"version":"2024.11.0","token":"42907aecb4d444d4a507b1e94b6ce71b","r":1,"spa":2}'
         crossorigin="anonymous"></script>
