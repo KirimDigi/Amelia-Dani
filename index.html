@@ -131,12 +131,13 @@
     </style>
 <style>
         #qrModal .btn-close {
-            position: relative !important;
+            position: absolute !important;
+            bottom: 16px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
             top: auto !important;
             right: auto !important;
-            left: auto !important;
-            margin: 16px auto 0 !important;
-            transform: none !important;
+            margin: 0 !important;
             z-index: 1060 !important;
             background: #E2078A !important; color: #fff !important;
             border-radius: 50% !important;
@@ -150,7 +151,7 @@
             cursor: pointer !important;
             pointer-events: auto !important;
         }
-        #qrModal .modal-content { position: relative; }
+        #qrModal .modal-content { position: relative; padding-bottom: 60px; }
         #qrModal .btn-close svg { stroke: #fff !important; }
     </style>
 </head>
