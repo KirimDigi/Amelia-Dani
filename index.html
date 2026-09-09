@@ -1326,23 +1326,11 @@
         // update teks Nama di modal (cari div yang berisi "Nama Tamu" sebelumnya)
         var divs = qrModal.querySelectorAll('div');
         for (var i=0;i<divs.length;i++){
-          if (divs[i].textContent.trim() === 'Nama Tamu' && divs[i].nextElementSibling) {
+          if (divs[i].textContent.trim() === 'Nama' && divs[i].nextElementSibling) {
             divs[i].nextElementSibling.textContent = guest;
           }
         }
-        // update QR code - ganti SVG dengan img dari QR API
-        var svg = qrModal.querySelector('svg');
-        if (svg && svg.parentElement) {
-          var data = guest + ' | ' + (satuMomen ? satuMomen.dataset.group : 'VIP');
-          var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(data);
-          // QR removed
-          // var img = document.createElement('img');
-          img.src = qrUrl;
-          img.width = 180; img.height = 180;
-          img.alt = 'QR ' + guest;
-          img.style.cssText = 'width:180px;height:180px;display:block;margin:auto;';
-          svg.parentElement.replaceChild(img, svg);
-        }
+        // QR barcode dihapus sesuai permintaan - tidak generate QR
       }
     } catch(e){ console.log('guest update error',e); }
   }
@@ -1351,6 +1339,27 @@
   // juga cek setelah 1 detik (untuk memastikan DOM ready)
   setTimeout(updateGuestFromURL, 800);
 })();
+// Fix QR modal close - pastikan bisa di-close
+document.addEventListener('DOMContentLoaded', function(){
+  var qrCloseBtn = document.querySelector('#qrModal .btn-close');
+  if (qrCloseBtn){
+    qrCloseBtn.addEventListener('click', function(){
+      try { closeModal(document.getElementById('qrModal')); } catch(e){
+        var m=document.getElementById('qrModal'); if(m){ m.classList.remove('show'); m.style.display='none'; document.body.classList.remove('modal-open'); var o=document.getElementById('modalOverlay'); if(o){o.classList.remove('show'); o.style.display='none';}}
+      }
+    });
+  }
+  // juga close jika klik overlay
+  var overlay = document.getElementById('modalOverlay');
+  if (overlay){
+    overlay.addEventListener('click', function(){
+      var m=document.getElementById('qrModal');
+      if(m && m.classList.contains('show')){
+        try { closeModal(m); } catch(e){ m.classList.remove('show'); m.style.display='none'; document.body.classList.remove('modal-open'); overlay.classList.remove('show'); overlay.style.display='none';}
+      }
+    });
+  }
+});
 </script>
 
 <script type="module" src="beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495"
